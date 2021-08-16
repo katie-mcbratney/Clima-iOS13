@@ -7,22 +7,61 @@
 //
 
 import UIKit
+import CoreLocation
 
-class WeatherViewController: UIViewController , UITextFieldDelegate{
+class WeatherViewController: UIViewController {
 
     @IBOutlet weak var conditionImageView: UIImageView!
     @IBOutlet weak var temperatureLabel: UILabel!
     @IBOutlet weak var cityLabel: UILabel!
     @IBOutlet weak var searchTextField: UITextField!
+    @IBOutlet weak var locationButton: UIButton!
     
     var weatherManager = WeatherManager()
+    var locationManager = CLLocationManager()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        locationManager.delegate = self
+        weatherManager.delegate = self
         searchTextField.delegate = self
+        
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.requestLocation()
     }
+    
+    
+}
 
+//MARK: - CLLocationManagerDelegate
+extension WeatherViewController: CLLocationManagerDelegate {
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        if let location = locations.last {
+            setLocationWeather(location: location)
+        }
+    }
+    
+    @IBAction func onLocationButtonPressed(_ sender: Any) {
+        if let location = locationManager.location {
+            setLocationWeather(location: location)
+        }
+    }
+    
+    func setLocationWeather(location: CLLocation){
+        let coord = location.coordinate
+        weatherManager.fetchWeather(lat: coord.latitude, lon: coord.longitude)
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print(error)
+    }
+}
+
+//MARK: - UITextFieldDelegate
+
+extension WeatherViewController: UITextFieldDelegate
+{
     @IBAction func searchPressed(_ sender: UIButton) {
         searchTextField.endEditing(true)
         print(searchTextField.text!)
@@ -54,3 +93,20 @@ class WeatherViewController: UIViewController , UITextFieldDelegate{
     }
 }
 
+//MARK: - WeatherManagerDelegate
+
+extension WeatherViewController: WeatherManagerDelegate
+{
+    func didUpdateWeather(_ weatherManager: WeatherManager, weather: WeatherModel){
+        DispatchQueue.main.async{
+            self.temperatureLabel.text = weather.temperatureString
+            self.conditionImageView.image = UIImage(systemName: weather.conditionName)
+            self.cityLabel.text = weather.city
+        }
+        
+    }
+    
+    func didFailWithError(error: Error) {
+        print(error)
+    }
+}
