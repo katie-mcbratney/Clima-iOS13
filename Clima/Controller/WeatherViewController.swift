@@ -16,6 +16,7 @@ class WeatherViewController: UIViewController {
     @IBOutlet weak var cityLabel: UILabel!
     @IBOutlet weak var searchTextField: UITextField!
     @IBOutlet weak var locationButton: UIButton!
+    @IBOutlet var window: UIView!
     
     var weatherManager = WeatherManager()
     var locationManager = CLLocationManager()
@@ -102,6 +103,18 @@ extension WeatherViewController: WeatherManagerDelegate
             self.temperatureLabel.text = weather.temperatureString
             self.conditionImageView.image = UIImage(systemName: weather.conditionName)
             self.cityLabel.text = weather.city
+            
+            let currentUTC = Int(NSDate().timeIntervalSince1970)
+            print("current: \(currentUTC) sunrise: \(weather.sunrise) sunset: \(weather.sunset)")
+            
+            let isDark = currentUTC < weather.sunrise //&& currentUTC > weather.sunset
+            if(isDark){
+                self.window.overrideUserInterfaceStyle = .dark
+            }
+            else {
+                self.window.overrideUserInterfaceStyle = .light
+            }
+            
         }
         
     }

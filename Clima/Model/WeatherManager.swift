@@ -50,11 +50,12 @@ struct WeatherManager {
         let decoder = JSONDecoder()
         do {
             let decodedData = try decoder.decode(WeatherData.self, from: weatherData)
-            print(decodedData.main.temp)
             let id = decodedData.weather[0].id
             let temp = decodedData.main.temp
             let name = decodedData.name
-            let weather = WeatherModel(conditionId: id, city: name, temp: temp)
+            let sunset = decodedData.sys.sunset
+            let sunrise = decodedData.sys.sunrise
+            let weather = WeatherModel(conditionId: id, city: name, temp: temp, sunrise: sunrise, sunset: sunset)
             return weather
             //let imageName = weather.conditionName
         } catch {

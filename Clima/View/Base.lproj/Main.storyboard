@@ -116,6 +116,7 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="Window" destination="g3Y-cT-2C3" id="mGU-9y-A9r"/>
                         <outlet property="cityLabel" destination="CWP-r8-Jsy" id="8cQ-3l-ufV"/>
                         <outlet property="conditionImageView" destination="mYn-vV-MBC" id="gpD-FU-YB0"/>
                         <outlet property="locationButton" destination="uqN-kS-Ypi" id="dXQ-4G-cF2"/>
